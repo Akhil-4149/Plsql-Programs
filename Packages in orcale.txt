@@ -1,0 +1,67 @@
+CREATE OR REPLACE PACKAGE data_objects_pkg AS
+
+    -- Declaration of variables
+    TYPE T_NumberArray IS TABLE OF NUMBER;
+
+    -- Procedure to insert a record into a table
+    PROCEDURE insert_record(p_id IN NUMBER, p_name IN VARCHAR2);
+
+    -- Function to fetch records
+    FUNCTION fetch_record(p_id IN NUMBER) RETURN VARCHAR2;
+
+    -- Procedure to update a record
+    PROCEDURE update_record(p_id IN NUMBER, p_name IN VARCHAR2);
+
+    -- Procedure to delete a record
+    PROCEDURE delete_record(p_id IN NUMBER);
+
+    -- Function to get all records as an array
+    FUNCTION get_all_records RETURN T_NumberArray;
+
+END data_objects_pkg;
+
+
+
+CREATE OR REPLACE PACKAGE BODY data_objects_pkg AS
+
+    -- Procedure to insert a record into a table
+    PROCEDURE insert_record(p_id IN NUMBER, p_name IN VARCHAR2) IS
+    BEGIN
+        INSERT INTO my_table (id, name)
+        VALUES (p_id, p_name);
+    END insert_record;
+
+    -- Function to fetch a record
+    FUNCTION fetch_record(p_id IN NUMBER) RETURN VARCHAR2 IS
+        v_name VARCHAR2(100);
+    BEGIN
+        SELECT name INTO v_name
+        FROM my_table
+        WHERE id = p_id;
+        RETURN v_name;
+    END fetch_record;
+
+    -- Procedure to update a record
+    PROCEDURE update_record(p_id IN NUMBER, p_name IN VARCHAR2) IS
+    BEGIN
+        UPDATE my_table
+        SET name = p_name
+        WHERE id = p_id;
+    END update_record;
+
+    -- Procedure to delete a record
+    PROCEDURE delete_record(p_id IN NUMBER) IS
+    BEGIN
+        DELETE FROM my_table
+        WHERE id = p_id;
+    END delete_record;
+
+    -- Function to get all records as an array
+    FUNCTION get_all_records RETURN T_NumberArray IS
+        v_records T_NumberArray;
+    BEGIN
+        SELECT id BULK COLLECT INTO v_records FROM my_table;
+        RETURN v_records;
+    END get_all_records;
+
+END data_objects_pkg;
